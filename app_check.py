@@ -192,6 +192,7 @@ class MainWindow(QMainWindow):
             print('Already Running.......................')
         else:
             print('Begin.........................')
+            self.txt_log.clear()
             self.timer.start()
             self.tm = 0
             self.worker.moo = self.comboBox.currentText().strip()
