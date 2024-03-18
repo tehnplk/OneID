@@ -49,6 +49,7 @@ class Worker(QThread):
         self.settings = QSettings("db_config.ini", QSettings.IniFormat)
 
         self.moo = None
+        self.running = True
 
     def run(self):
 
@@ -75,6 +76,7 @@ class Worker(QThread):
         cur.execute(sql)
         persons = cur.fetchall()
         n = len(persons)
+        print(f"Person = {n}")
         i = 0
         for p in persons:
             i += 1
@@ -106,6 +108,8 @@ class MainWindow(QMainWindow):
         self.btn_token.clicked.connect(self.token)
 
         self.btn_excel.clicked.connect(self.excel)
+
+        self.btn_stop.clicked.connect(self.stop)
 
         self.worker = Worker()
         self.worker.sign_progress.connect(self.progress)
@@ -142,19 +146,23 @@ class MainWindow(QMainWindow):
         except Exception as e:
             self.txt_log.append(str(e))
 
+
+    def stop(self):
+        self.timer.stop()
+        self.worker.currentThread().quit()
     def err(self, data):
         self.txt_log.append(str(data))
 
     def excel(self):
         moo = self.comboBox.currentText().strip()
-        sql = f"SELECT t.person_id,t.cid,t.pname,t.fname,t.lname,t.age_y,t.moo,t.moph_id_check_result from plk_moph_id_person_check t where moo = '{moo}'"
+        sql = f"SELECT t.person_id,t.cid,t.pname,t.fname,t.lname,t.age_y,concat(\" \",t.address) address,t.moo,t.moph_id_check_result from plk_moph_id_person_check t where moo = '{moo}'"
 
         self.cur.execute(sql)
         data = self.cur.fetchall()
         file = f'data_{moo}.csv'
         with open(file, 'w') as f:
             writer = csv.writer(f)
-            writer.writerow(['pid', 'cid', 'pname', 'fname', 'lname', 'age', 'moo', 'check_result'])
+            writer.writerow(['pid', 'cid', 'pname', 'fname', 'lname', 'age','address', 'moo', 'check_result'])
             for p in data:
                 print(p)
                 writer.writerow(p)

@@ -78,9 +78,9 @@
    <widget class="QPushButton" name="btn_begin">
     <property name="geometry">
      <rect>
-      <x>620</x>
+      <x>530</x>
       <y>520</y>
-      <width>141</width>
+      <width>131</width>
       <height>41</height>
      </rect>
     </property>
@@ -96,7 +96,7 @@
    <widget class="QPushButton" name="btn_excel">
     <property name="geometry">
      <rect>
-      <x>440</x>
+      <x>370</x>
       <y>520</y>
       <width>141</width>
       <height>41</height>
@@ -193,6 +193,24 @@
      <font>
       <pointsize>9</pointsize>
      </font>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btn_stop">
+    <property name="geometry">
+     <rect>
+      <x>680</x>
+      <y>520</y>
+      <width>81</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>หยุด</string>
     </property>
    </widget>
   </widget>
