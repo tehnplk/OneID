@@ -1,0 +1,24 @@
+
+การตรวจสอบว่า CID นี้ยืนยันตัวตนหรือยังให้ใช้ API นี้ โดยส่ง Token Bearer เหมือน MOPH IC
+
+https://phr1.moph.go.th/idp/api/check_ekyc
+method : POST
+payload (body) :
+{
+    "cid" : "0000000000000"
+}
+ตัวอย่าง response
+
+{
+  "result": 1,
+  // 1 คือ จำนวนครั้งที่มีได้มีการใช้ระบบ eKYC
+  //และได้นำรหัส PIN Code ไปใช้ยืนยันตัวตนใน application หมอพร้อมแล้ว
+  // หรือได้ทำการเพิ่มความน่าเชื่อถือผ่าน https://moph.id.th ระดับ 2 แล้ว
+
+  "MessageCode": 200,
+  "Message": "OK",
+  "RequestTime": "2022-12-20T10:47:39.581Z",
+  "EndpointIP": "192.168.86.5",
+  "EndpointPort": 19004,
+  "processing_time_ms": 16
+}
