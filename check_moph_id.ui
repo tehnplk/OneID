@@ -90,13 +90,13 @@
      </font>
     </property>
     <property name="text">
-     <string>เริ่ม</string>
+     <string>เริ่มตรวจสอบ</string>
     </property>
    </widget>
    <widget class="QPushButton" name="btn_excel">
     <property name="geometry">
      <rect>
-      <x>460</x>
+      <x>440</x>
       <y>520</y>
       <width>141</width>
       <height>41</height>

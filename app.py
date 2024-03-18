@@ -15,6 +15,7 @@ from PyQt5 import uic
 from io import StringIO
 import re
 import csv
+import version
 
 
 def my_excepthook(type, value, tback):
@@ -97,7 +98,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
         uic.loadUi('check_moph_id.ui', self)
-        self.setWindowTitle("PLK Health ID Checker  V1.0(20240317)")
+        self.setWindowTitle(f"PLK Health ID Checker {version.ver()}")
         self.progressBar.setValue(0)
 
         self.btn_begin.clicked.connect(self.worker_begin)
