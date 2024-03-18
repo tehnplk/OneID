@@ -71,7 +71,7 @@ class Worker(QThread):
 
         sql = read('./sql_list_person.sql')
         if self.moo != 'All':
-            sql = f"{sql} and moo = '{self.moo}'"
+            sql = f"""{sql} and moo = '{self.moo}'"""
         print(sql)
         cur.execute(sql)
         persons = cur.fetchall()
@@ -92,6 +92,7 @@ class Worker(QThread):
                 self.sign_err.emit(resp)
                 print(resp)
             time.sleep(.2)
+            QApplication.processEvents()
 
         self.sign_done.emit()
 
@@ -109,7 +110,7 @@ class MainWindow(QMainWindow):
 
         self.btn_excel.clicked.connect(self.excel)
 
-        self.btn_stop.clicked.connect(self.stop)
+        #self.btn_stop.clicked.connect(self.stop)
 
         self.worker = Worker()
         self.worker.sign_progress.connect(self.progress)
@@ -138,7 +139,7 @@ class MainWindow(QMainWindow):
             self.cur.execute(read('./sql_create.sql'))
             self.conn.commit()
 
-            self.cur.execute("select distinct moo from plk_moph_id_person_check")
+            self.cur.execute("select distinct moo from plk_moph_id_person_check order by moo asc")
             data = self.cur.fetchall()
             for d in data:
                 self.comboBox.addItem(d[0])
@@ -146,10 +147,12 @@ class MainWindow(QMainWindow):
         except Exception as e:
             self.txt_log.append(str(e))
 
-
     def stop(self):
-        self.timer.stop()
-        self.worker.currentThread().quit()
+        if self.worker.isRunning():
+            print('Stopping Thread.')
+            self.timer.stop()
+            self.worker.terminate()
+
     def err(self, data):
         self.txt_log.append(str(data))
 
@@ -162,7 +165,7 @@ class MainWindow(QMainWindow):
         file = f'data_{moo}.csv'
         with open(file, 'w') as f:
             writer = csv.writer(f)
-            writer.writerow(['pid', 'cid', 'pname', 'fname', 'lname', 'age','address', 'moo', 'check_result'])
+            writer.writerow(['pid', 'cid', 'pname', 'fname', 'lname', 'age', 'address', 'moo', 'check_result'])
             for p in data:
                 print(p)
                 writer.writerow(p)
@@ -198,15 +201,13 @@ class MainWindow(QMainWindow):
         self.timer.stop()
 
     def worker_begin(self):
-        if self.worker.isRunning():
-            print('Already Running.......................')
-        else:
-            print('Begin.........................')
-            self.txt_log.clear()
-            self.timer.start()
-            self.tm = 0
-            self.worker.moo = self.comboBox.currentText().strip()
-            self.worker.start()
+        self.stop()
+        print('Begin.........................')
+        self.txt_log.clear()
+        self.timer.start()
+        self.tm = 0
+        self.worker.moo = self.comboBox.currentText().strip()
+        self.worker.start()
 
 
 if __name__ == '__main__':
