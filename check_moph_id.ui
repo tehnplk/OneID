@@ -78,9 +78,9 @@
    <widget class="QPushButton" name="btn_begin">
     <property name="geometry">
      <rect>
-      <x>630</x>
+      <x>520</x>
       <y>520</y>
-      <width>191</width>
+      <width>161</width>
       <height>41</height>
      </rect>
     </property>
@@ -96,7 +96,7 @@
    <widget class="QPushButton" name="btn_excel">
     <property name="geometry">
      <rect>
-      <x>450</x>
+      <x>360</x>
       <y>520</y>
       <width>141</width>
       <height>41</height>
@@ -193,6 +193,24 @@
      <font>
       <pointsize>9</pointsize>
      </font>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btn_auto">
+    <property name="geometry">
+     <rect>
+      <x>700</x>
+      <y>520</y>
+      <width>121</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Auto 10 sec</string>
     </property>
    </widget>
   </widget>

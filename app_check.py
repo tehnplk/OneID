@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QPushButton,
 from PyQt5.QtCore import QThread, QTimer, QEventLoop, pyqtSignal, QSettings, QObject
 from PyQt5.QtGui import QIcon
 
-from PyQt5 import uic
+from PyQt5 import uic ,QtCore
 
 from io import StringIO
 import re
@@ -52,7 +52,6 @@ class Worker(QThread):
         self.running = True
 
     def run(self):
-
         url = """https://phr1.moph.go.th/idp/api/check_ekyc"""
         auth_token = read('./token.txt')
         headers = {'Authorization': f'Bearer {auth_token}'}
@@ -110,7 +109,9 @@ class MainWindow(QMainWindow):
 
         self.btn_excel.clicked.connect(self.excel)
 
-        #self.btn_stop.clicked.connect(self.stop)
+        self.btn_auto.clicked.connect(self.worker_auto)
+
+        # self.btn_stop.clicked.connect(self.stop)
 
         self.worker = Worker()
         self.worker.sign_progress.connect(self.progress)
@@ -121,6 +122,10 @@ class MainWindow(QMainWindow):
         self.timer.setInterval(1000)
         self.tm = 0
         self.timer.timeout.connect(self._time)
+
+        self.timer_auto = QTimer()
+        self.timer_auto.setInterval(10 * 1000)
+        self.timer_auto.timeout.connect(self.auto)
 
         self.settings = QSettings("db_config.ini", QSettings.IniFormat)
         try:
@@ -202,7 +207,21 @@ class MainWindow(QMainWindow):
 
     def worker_begin(self):
         self.stop()
+        self.timer_auto.stop()
         print('Begin.........................')
+        self.txt_log.clear()
+        self.timer.start()
+        self.tm = 0
+        self.worker.moo = self.comboBox.currentText().strip()
+        self.worker.start()
+
+    def worker_auto(self):
+        print('Auto Click')
+        self.timer_auto.stop()
+        self.timer_auto.start()
+    def auto(self):
+        self.stop()
+        print('Auto.........................')
         self.txt_log.clear()
         self.timer.start()
         self.tm = 0
