@@ -118,27 +118,29 @@ class MainWindow(QMainWindow):
         self.timer.timeout.connect(self._time)
 
         self.settings = QSettings("db_config.ini", QSettings.IniFormat)
-        self.conn = pymysql.connect(
-            host=self.settings.value('DB/host'),
-            user=self.settings.value('DB/user'),
-            password=self.settings.value('DB/password'),
-            db=self.settings.value('DB/db'),
-            port=int(self.settings.value('DB/port')),
-            charset='tis620',
-            client_flag=CLIENT.MULTI_STATEMENTS,
-            autocommit=False, )
+        try:
+            self.conn = pymysql.connect(
+                host=self.settings.value('DB/host'),
+                user=self.settings.value('DB/user'),
+                password=self.settings.value('DB/password'),
+                db=self.settings.value('DB/db'),
+                port=int(self.settings.value('DB/port')),
+                charset='tis620',
+                client_flag=CLIENT.MULTI_STATEMENTS,
+                autocommit=False, )
 
-        self.cur = self.conn.cursor()
+            self.cur = self.conn.cursor()
 
-        self.cur.execute(read('./sql_create.sql'))
-        self.conn.commit()
+            self.cur.execute(read('./sql_create.sql'))
+            self.conn.commit()
 
-        self.cur.execute("select distinct moo from plk_moph_id_person_check")
-        data = self.cur.fetchall()
-        for d in data:
-            self.comboBox.addItem(d[0])
-        self.comboBox.addItem('All')
-        # print(data)
+            self.cur.execute("select distinct moo from plk_moph_id_person_check")
+            data = self.cur.fetchall()
+            for d in data:
+                self.comboBox.addItem(d[0])
+            self.comboBox.addItem('All')
+        except Exception as e:
+            self.txt_log.append(str(e))
 
     def err(self, data):
         self.txt_log.append(str(data))
