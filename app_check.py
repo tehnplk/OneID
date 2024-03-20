@@ -172,7 +172,6 @@ class MainWindow(QMainWindow):
             writer = csv.writer(f)
             writer.writerow(['pid', 'cid', 'pname', 'fname', 'lname', 'age', 'address', 'moo', 'check_result'])
             for p in data:
-                print(p)
                 writer.writerow(p)
         os.startfile(file)
 
