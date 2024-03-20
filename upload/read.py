@@ -27,7 +27,7 @@ print(datas)
 with connection.cursor() as cursor:
     sql = "delete from data_raw"
     cursor.execute(sql)
-    sql = "insert into data_raw (hoscode,hosname,region,prov,amp,tmb,device,ekyc_pop,ekyc_do,otp_confirm,emp_total,emp_confirm,emp_percent) values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+    sql = "insert into data_raw  values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
     cursor.executemany(sql, datas)
 
     cursor.execute("call Z_All_process();")
