@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QPushButton,
 from PyQt5.QtCore import QThread, QTimer, QEventLoop, pyqtSignal, QSettings, QObject
 from PyQt5.QtGui import QIcon
 
-from PyQt5 import uic ,QtCore
+from PyQt5 import uic, QtCore
 
 from io import StringIO
 import re
@@ -50,6 +50,10 @@ class Worker(QThread):
 
         self.moo = None
         self.running = True
+
+    def stop(self):
+        self.running = False
+        self.terminate()
 
     def run(self):
         url = """https://phr1.moph.go.th/idp/api/check_ekyc"""
@@ -156,7 +160,7 @@ class MainWindow(QMainWindow):
         if self.worker.isRunning():
             print('Stopping Thread.')
             self.timer.stop()
-            self.worker.terminate()
+            self.worker.stop()
 
     def err(self, data):
         self.txt_log.append(str(data))
@@ -218,6 +222,7 @@ class MainWindow(QMainWindow):
         print('Auto Click')
         self.timer_auto.stop()
         self.timer_auto.start()
+
     def auto(self):
         self.stop()
         print('Auto.........................')
