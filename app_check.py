@@ -172,7 +172,7 @@ class MainWindow(QMainWindow):
         self.cur.execute(sql)
         data = self.cur.fetchall()
         file = f'data_{moo}.csv'
-        with open(file, 'w') as f:
+        with open(file, 'w',newline='') as f:
             writer = csv.writer(f)
             writer.writerow(['pid', 'cid', 'pname', 'fname', 'lname', 'age', 'address', 'moo', 'check_result'])
             for p in data:
