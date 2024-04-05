@@ -6,6 +6,8 @@ import pandas as pd
 
 import configparser
 
+import csv
+
 app = Flask(__name__)
 
 config = configparser.ConfigParser()
@@ -19,16 +21,23 @@ print(host)
 
 
 @app.route('/')
-def main():
+def index():
     return render_template("index.html")
 
+@app.route('/idx_health_id')
+def up_health_id():
+    return render_template("healthid.html")
 
-@app.route('/success', methods=['POST'])
-def success():
+@app.route('/idx_provider_id')
+def up_provider_id():
+    return render_template("providerid.html")
+
+@app.route('/do_health_id', methods=['POST'])
+def do_health_id():
     if request.method == 'POST':
         f = request.files['file']
         if not f:
-            return redirect('/')
+            return redirect('/idx_health_id')
         f.save(f"./upload/{f.filename}")
 
         df = pd.read_excel(f"./upload/{f.filename}")
@@ -69,6 +78,44 @@ def success():
             connection.commit()
 
         return render_template("result.html", name=f.filename)
+
+@app.route('/do_provider_id', methods=['POST'])
+def do_provider_id():
+    if request.method == 'POST':
+        f = request.files['file']
+        if not f:
+            return redirect('/')
+        f.save(f"./upload/{f.filename}")
+
+        connection = pymysql.connect(
+            host=host,
+            user=user,
+            password=password,
+            db=db,
+            port=port
+        )
+
+        cursor = connection.cursor()
+
+        with open(f"./upload/{f.filename}", "r", encoding="utf8") as tsv:
+            data = csv.reader(tsv, delimiter="\t")
+            print(type(data))
+            datas = list()
+            for row in data:
+                datas.append(row)
+            print(len(datas), datas)
+
+            cursor.execute("truncate provider_raw");
+
+            sql = "insert into provider_raw values (%s,%s,%s,%s,%s,0,%s,now())"
+            cursor.executemany(sql, datas)
+            connection.commit()
+            cursor.close()
+            connection.close()
+
+        return render_template("result.html", name=f.filename)
+
+
 
 
 if __name__ == '__main__':
