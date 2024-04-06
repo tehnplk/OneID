@@ -24,13 +24,16 @@ print(host)
 def index():
     return render_template("index.html")
 
+
 @app.route('/idx_health_id')
 def up_health_id():
     return render_template("healthid.html")
 
+
 @app.route('/idx_provider_id')
 def up_provider_id():
     return render_template("providerid.html")
+
 
 @app.route('/do_health_id', methods=['POST'])
 def do_health_id():
@@ -61,7 +64,7 @@ def do_health_id():
                 rows.append(str(col))
             rows = tuple(rows)
             datas.append(rows)
-        print(datas)
+        #print(datas)
 
         with connection.cursor() as cursor:
             sql = "delete from data_raw"
@@ -71,20 +74,21 @@ def do_health_id():
             cursor.executemany(sql, datas)
 
             sql = f"insert into log_file values (NULL,NOW(),'{f.filename}','{request.remote_addr}');";
-            print(sql)
+
             cursor.execute(sql)
 
-            cursor.execute("call Z_All_process();")
+            cursor.execute("call B_All_process();")
             connection.commit()
 
         return render_template("result.html", name=f.filename)
+
 
 @app.route('/do_provider_id', methods=['POST'])
 def do_provider_id():
     if request.method == 'POST':
         f = request.files['file']
         if not f:
-            return redirect('/')
+            return redirect('/idx_provider_id')
         f.save(f"./upload/{f.filename}")
 
         connection = pymysql.connect(
@@ -103,19 +107,18 @@ def do_provider_id():
             datas = list()
             for row in data:
                 datas.append(row)
-            print(len(datas), datas)
+            #print(len(datas), datas)
 
             cursor.execute("truncate provider_raw");
 
             sql = "insert into provider_raw values (%s,%s,%s,%s,%s,0,%s,now())"
             cursor.executemany(sql, datas)
+
+            sql = f"insert into log_file values (NULL,NOW(),'{f.filename}','{request.remote_addr}');"
+            cursor.execute(sql)
             connection.commit()
-            cursor.close()
-            connection.close()
 
         return render_template("result.html", name=f.filename)
-
-
 
 
 if __name__ == '__main__':
