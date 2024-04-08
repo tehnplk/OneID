@@ -116,6 +116,7 @@ def do_provider_id():
 
             sql = f"insert into log_file values (NULL,NOW(),'{f.filename}','{request.remote_addr}');"
             cursor.execute(sql)
+            cursor.execute("call C_All_process();")
             connection.commit()
 
         return render_template("result.html", name=f.filename)

@@ -8,7 +8,7 @@ a = Analysis(
     ['flask_upload.py'],
     pathex=[],
     binaries=[],
-    datas=[],
+    datas=[('./templates/*', './templates'), ('./upload', './upload')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
