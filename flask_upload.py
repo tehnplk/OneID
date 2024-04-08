@@ -8,6 +8,8 @@ import configparser
 
 import csv
 
+from datetime import datetime
+
 app = Flask(__name__)
 
 config = configparser.ConfigParser()
@@ -64,7 +66,7 @@ def do_health_id():
                 rows.append(str(col))
             rows = tuple(rows)
             datas.append(rows)
-        #print(datas)
+        # print(datas)
 
         with connection.cursor() as cursor:
             sql = "delete from data_raw"
@@ -79,6 +81,7 @@ def do_health_id():
 
             cursor.execute("call B_All_process();")
             connection.commit()
+            print(datetime.now(), "upload health_id")
 
         return render_template("result.html", name=f.filename)
 
@@ -107,7 +110,7 @@ def do_provider_id():
             datas = list()
             for row in data:
                 datas.append(row)
-            #print(len(datas), datas)
+            # print(len(datas), datas)
 
             cursor.execute("truncate provider_raw");
 
@@ -118,6 +121,7 @@ def do_provider_id():
             cursor.execute(sql)
             cursor.execute("call C_All_process();")
             connection.commit()
+            print(datetime.now(), "upload provider_id")
 
         return render_template("result.html", name=f.filename)
 
