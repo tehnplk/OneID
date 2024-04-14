@@ -19,33 +19,31 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
         uic.loadUi('test_thread.ui', self)
-        self.thread = {}
+
         self.progressBar_1.setValue(0)
         self.progressBar_2.setValue(0)
 
+        self.thread = dict()
         self.thread[1] = ThreadClass(index=1)
         self.thread[2] = ThreadClass(index=2)
 
-        self.btn_t_1.clicked.connect(lambda:self.do(1))
+        print(self.thread)
+
+        self.btn_t_1.clicked.connect(lambda: self.do_click(1))
         self.btn_t_1.setText('Click')
 
-        self.btn_t_2.clicked.connect(lambda: self.do(2))
+        self.btn_t_2.clicked.connect(lambda: self.do_click(2))
         self.btn_t_2.setText('Click')
 
-    def do(self,index):
+    def do_click(self, index):
         if self.thread[index].is_running:
             self.thread[index].stop()
 
         else:
+            self.thread[index].signal.connect(self.my_progress)
             self.thread[index].start()
-            self.thread[index].any_signal.connect(self.my_progress)
 
-
-
-
-
-    def my_progress(self,counter):
-        cnt = counter
+    def my_progress(self, cnt):
         index = self.sender().index
         if index == 1:
             self.progressBar_1.setValue(cnt)
@@ -54,28 +52,25 @@ class MainWindow(QMainWindow):
 
 
 class ThreadClass(QThread):
-    any_signal = QtCore.pyqtSignal(int)
+    signal = pyqtSignal(int)
 
     def __init__(self, index=0):
         super(ThreadClass, self).__init__()
         self.index = index
+        self.p = 0
         self.is_running = False
 
     def run(self):
-        print('Starting thread...', self.index)
         self.is_running = True
-        cnt = 0
-        while (True):
-            cnt += 1
-            if cnt == 99: cnt = 0
-            time.sleep(0.01)
-            self.any_signal.emit(cnt)
+        while True:
+            self.p += 1
+            if self.p == 99: self.p = 0
+            time.sleep(0.1)
+            self.signal.emit(self.p)
 
     def stop(self):
         self.is_running = False
-        print('Stopping thread...', self.index)
         self.terminate()
-
 
 
 if __name__ == '__main__':
