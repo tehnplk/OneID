@@ -29,19 +29,27 @@ class MainWindow(QMainWindow):
 
         print(self.thread)
 
-        self.btn_t_1.clicked.connect(lambda: self.do_click(1))
-        self.btn_t_1.setText('Click')
+        self.btn_t_1.setText('Start')
+        self.btn_t_1.clicked.connect(lambda: self.do_start(1))
+        self.btn_t_1.clicked.connect(lambda: self.do_stop(1))
 
-        self.btn_t_2.clicked.connect(lambda: self.do_click(2))
-        self.btn_t_2.setText('Click')
+        self.btn_t_2.setText('Start')
+        self.btn_t_2.setCheckable(True)
+        self.btn_t_2.clicked.connect(lambda: self.do_start(2))
+        self.btn_t_2.clicked.connect(lambda: self.do_stop(2))
 
-    def do_click(self, index):
-        if self.thread[index].is_running:
-            self.thread[index].stop()
 
-        else:
+    def do_start(self, index):
             self.thread[index].signal.connect(self.my_progress)
             self.thread[index].start()
+            self.btn_t_1.setText('Stop')
+
+    def do_stop(self, index):
+        if self.thread[index].is_running:
+            self.thread[index].stop()
+            self.btn_t_1.setText('Start')
+
+
 
     def my_progress(self, cnt):
         index = self.sender().index
