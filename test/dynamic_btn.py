@@ -9,16 +9,20 @@ class MainWindow(QMainWindow):
     def __init__(self):  # x <-- 3
         super().__init__()
 
+        deps = [{'id': '001', 'name': 'OPD'}, {'id': '002', 'name': 'ศัลยกรรม'}]
+
         self.centralwidget = QWidget()
         self.setCentralWidget(self.centralwidget)
         self.lay = QVBoxLayout(self.centralwidget)
-        for i in range(5):
-            self.btn = QPushButton(f'Button {i + 1}', self)
-            self.btn.clicked.connect(lambda checked, n=i + 1: self.handle_play_button(n))
+        for dep in deps:
+            self.btn = QPushButton(dep['name'], self)
+            self.btn.clicked.connect(
+                lambda n,code=dep['id'], name=dep['name']: self.handle_play_button(code, name))
             self.lay.addWidget(self.btn)
+            self.lay.addStretch(1)
 
-    def handle_play_button(self, n):
-        print(n, self.sender().text())
+    def handle_play_button(self, code, name):
+        print(code, name)
 
 
 if __name__ == "__main__":
