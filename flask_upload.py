@@ -3,7 +3,7 @@ from fileinput import filename
 from flask import *
 import pymysql
 import pandas as pd
-
+from openpyxl import workbook, load_workbook
 import configparser
 
 import csv
@@ -35,6 +35,10 @@ def up_health_id():
 @app.route('/idx_provider_id')
 def up_provider_id():
     return render_template("providerid.html")
+
+@app.route('/idx_phr')
+def up_phr():
+    return render_template("phr.html")
 
 
 @app.route('/do_health_id', methods=['POST'])
@@ -124,6 +128,51 @@ def do_provider_id():
             print(datetime.now(), "upload provider_id")
 
         return render_template("result.html", name=f.filename)
+
+@app.route('/do_phr', methods=['POST'])
+def do_phr():
+    if request.method == 'POST':
+        f = request.files['file']
+        if not f:
+            return redirect('/idx_phr')
+        f.save(f"./upload/{f.filename}")
+
+        connection = pymysql.connect(
+            host=host,
+            user=user,
+            password=password,
+            db=db,
+            port=port
+        )
+
+        wb = load_workbook(f"./upload/{f.filename}")
+        ws = wb.active
+
+        i = 0
+
+        datas = list()
+        for row in ws:
+            cells = []
+            for c in row:
+                val = str(c.value).replace('\n', '')
+                if val == 'None':
+                    val = None
+                cells.append(val)
+            cells = tuple(cells)
+            datas.append(cells)
+        datas.pop(0)
+
+        print('import .. ', len(datas))
+
+        with connection.cursor() as cursor:
+            cursor.execute("TRUNCATE phr_raw;")
+            sql = "insert into phr_raw values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+            cursor.executemany(sql, datas)
+            connection.commit()
+
+
+        return render_template("result.html", name=f.filename)
+
 
 
 if __name__ == '__main__':
