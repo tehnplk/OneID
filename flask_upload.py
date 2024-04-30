@@ -21,6 +21,14 @@ db = config.get('DB', 'db')
 port = config.getint('DB', 'port')
 print(host)
 
+connection = pymysql.connect(
+    host=host,
+    user=user,
+    password=password,
+    db=db,
+    port=port
+)
+
 
 @app.route('/')
 def index():
@@ -36,9 +44,15 @@ def up_health_id():
 def up_provider_id():
     return render_template("providerid.html")
 
+
 @app.route('/idx_phr')
 def up_phr():
     return render_template("phr.html")
+
+
+@app.route('/idx_telemed')
+def up_telemed():
+    return render_template("telemed.html")
 
 
 @app.route('/do_health_id', methods=['POST'])
@@ -129,6 +143,7 @@ def do_provider_id():
 
         return render_template("result.html", name=f.filename)
 
+
 @app.route('/do_phr', methods=['POST'])
 def do_phr():
     if request.method == 'POST':
@@ -170,9 +185,42 @@ def do_phr():
             cursor.executemany(sql, datas)
             connection.commit()
 
-
         return render_template("result.html", name=f.filename)
 
+
+@app.route('/do_telemed', methods=['POST'])
+def do_telemed():
+    if request.method == 'POST':
+        f = request.files['file']
+        if not f:
+            return redirect('/idx_telemed')
+        f.save(f"./upload/{f.filename}")
+
+        with open(f"./upload/{f.filename}", "r", encoding="utf8") as file_stream:
+            data = csv.reader(file_stream, delimiter=",")
+            rows = list()
+            for row in data:
+                rows.append(row)
+
+            rows.pop(0)
+            datas = list()
+            for r in rows:
+                hos = r[0]
+                hos = hos.split(":")
+                hoscode = hos[0]
+                hosname = hos[1]
+                visit = r[1]
+                m = [hoscode, hosname, visit]
+                m = tuple(m)
+                datas.append(m)
+
+        with connection.cursor() as cursor:
+            cursor.execute("TRUNCATE telemed_raw;")
+            sql = "insert into telemed_raw values (%s,%s,%s)"
+            cursor.executemany(sql, datas)
+            connection.commit()
+
+        return render_template("result.html", name=f.filename)
 
 
 if __name__ == '__main__':
