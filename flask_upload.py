@@ -54,6 +54,10 @@ def up_phr():
 def up_telemed():
     return render_template("telemed.html")
 
+@app.route('/idx_appointment')
+def up_appointment():
+    return render_template("appointment.html")
+
 
 @app.route('/do_health_id', methods=['POST'])
 def do_health_id():
