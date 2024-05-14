@@ -54,6 +54,7 @@ def up_phr():
 def up_telemed():
     return render_template("telemed.html")
 
+
 @app.route('/idx_appointment')
 def up_appointment():
     return render_template("appointment.html")
@@ -67,7 +68,22 @@ def do_health_id():
             return redirect('/idx_health_id')
         f.save(f"./upload/{f.filename}")
 
-        df = pd.read_excel(f"./upload/{f.filename}")
+        wb = load_workbook(f"./upload/{f.filename}")
+        ws = wb.active
+        ws.delete_cols(1, 1)
+        ws.delete_cols(3, 2)
+        ws.delete_cols(14, 10)
+        datas = []
+        for row in ws:
+            data_row = []
+            for cell in row:
+                c = cell.value
+                if c is None:
+                    c = ''
+                data_row.append(str(c))
+            datas.append(data_row)
+            # print(data_row)
+        datas.pop(0)
 
         connection = pymysql.connect(
             host=host,
@@ -76,19 +92,6 @@ def do_health_id():
             db=db,
             port=port
         )
-
-        datas = list()
-        for i in range(len(df)):
-            rows = list()
-            for n in range(1, 14):
-                col = df.iloc[i, n]
-                if n == 1:
-                    col = f"00000{str(df.iloc[i, n])}"
-                    col = col[-5:]
-                rows.append(str(col))
-            rows = tuple(rows)
-            datas.append(rows)
-        # print(datas)
 
         with connection.cursor() as cursor:
             sql = "delete from data_raw"
