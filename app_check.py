@@ -144,9 +144,12 @@ class MainWindow(QMainWindow):
                 autocommit=False, )
 
             self.cur = self.conn.cursor()
-
-            self.cur.execute(read('./sql_create.sql'))
-            self.conn.commit()
+            try:
+                self.cur.execute(read('./sql_create.sql'))
+                self.conn.commit()
+            except Exception as E:
+                print(E)
+                pass
 
             self.cur.execute("select distinct moo from plk_moph_id_person_check order by moo asc")
             data = self.cur.fetchall()
@@ -172,7 +175,7 @@ class MainWindow(QMainWindow):
         self.cur.execute(sql)
         data = self.cur.fetchall()
         file = f'data_{moo}.csv'
-        with open(file, 'w',newline='') as f:
+        with open(file, 'w', newline='') as f:
             writer = csv.writer(f)
             writer.writerow(['pid', 'cid', 'pname', 'fname', 'lname', 'age', 'address', 'moo', 'check_result'])
             for p in data:
