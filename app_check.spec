@@ -8,7 +8,7 @@ a = Analysis(
     ['app_check.py'],
     pathex=[],
     binaries=[],
-    datas=[('*.txt', './'), ('*.ui', './'), ('*.ini', './'), ('*.sql', './'), ('*.png', './')],
+    datas=[],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
